@@ -239,7 +239,7 @@ export function SiteClient({
         <section className="hero" id="home">
           <div className="hero-grid">
             <div className="hero-copy">
-              <p className="eyebrow"><span>01</span> ACTIVE ROSTER / PLAYER PROFILE</p>
+              <p className="eyebrow"><span>01</span> ANT1VOLVE 5 / PERSONAL EVOLUTION PROFILE</p>
               <div className="callsign-wrap">
                 <span className="callsign-label">CALLSIGN</span>
                 {editMode ? <Input className="inline-callsign" value={draft.player.callsign} onChange={(event) => setDraft({ ...draft, player: { ...draft.player, callsign: event.target.value } })} /> : <h1>{draft.player.callsign}</h1>}
@@ -349,7 +349,7 @@ export function SiteClient({
               </div>
             </div>
           </div>
-          <div className="contact-marquee" aria-hidden="true"><span>AVAILABLE FOR NEW MISSIONS</span><i /><span>AVAILABLE FOR NEW MISSIONS</span><i /><span>AVAILABLE FOR NEW MISSIONS</span></div>
+          <div className="contact-marquee" aria-hidden="true"><span>REJECT MEANINGLESS COMPETITION</span><i /><span>CHOOSE REAL EVOLUTION</span><i /><span>ANT1VOLVE 5</span></div>
         </section>
       </main>
 

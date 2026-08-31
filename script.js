@@ -68,7 +68,7 @@
     setText('contact-message', config.contact?.message);
 
     const cardIndex = $('.card-index');
-    if (cardIndex) cardIndex.textContent = config.player?.id || 'PX-01';
+    if (cardIndex) cardIndex.textContent = config.player?.id || 'AV5-01';
     const status = $('.player-card-meta strong');
     if (status) {
       status.replaceChildren(createElement('i'), document.createTextNode(` ${config.player?.status || 'ONLINE'}`));

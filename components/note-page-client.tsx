@@ -139,8 +139,8 @@ export function NotePageClient({ note, auth }: { note: Note | null; auth: NoteAu
     <div className="note-shell">
       <header className="note-header">
         <Link className="brand" href="/#notes">
-          <span className="brand-mark">PX</span>
-          <span className="brand-copy"><strong>PHANTOM X</strong><small>FIELD NOTES</small></span>
+          <span className="brand-mark">AV5</span>
+          <span className="brand-copy"><strong>ANT1VOLVE 5</strong><small>FIELD NOTES // TRUE EVOLUTION</small></span>
         </Link>
         <div className="note-header-actions">
           <Link href="/#notes">← ALL NOTES</Link>

@@ -117,10 +117,54 @@ export async function readSiteContent(): Promise<SiteContent> {
     .first<{ data: string }>();
   if (!row) return defaultContent;
   try {
-    return JSON.parse(row.data) as SiteContent;
+    const parsed = JSON.parse(row.data) as SiteContent;
+    const upgraded = upgradeLegacyBrand(parsed);
+    if (upgraded !== parsed) {
+      const now = new Date().toISOString();
+      await db
+        .prepare('UPDATE site_content SET data = ?, updated_at = ?, updated_by = ? WHERE id = ?')
+        .bind(JSON.stringify(upgraded), now, 'system-brand-upgrade', 'primary')
+        .run();
+    }
+    return upgraded;
   } catch {
     return defaultContent;
   }
+}
+
+function upgradeLegacyBrand(content: SiteContent): SiteContent {
+  if (content.brand?.name.trim().toUpperCase() !== 'PHANTOM X') return content;
+  return {
+    ...content,
+    meta: {
+      title: 'ANT1VOLVE 5 // True Evolution Profile',
+      description: '拒绝无意义的竞争，选择真正的进化。',
+    },
+    brand: {
+      name: 'ANT1VOLVE 5',
+      mark: 'AV5',
+      division: 'ANTI-INVOLUTION // TRUE EVOLUTION',
+    },
+    gallery: {
+      ...content.gallery,
+      images: content.gallery.images.map((image) => ({
+        ...image,
+        src: image.src === '/og.jpg' ? '/og.png' : image.src,
+        alt: image.alt.replace(/PHANTOM X/gi, 'ANT1VOLVE 5'),
+      })),
+    },
+    player: {
+      ...content.player,
+      id: content.player.id.replace(/^PX-/i, 'AV5-'),
+      tagline: '拒绝无意义的竞争，选择真正的进化。',
+      focus: 'ANTI-INVOLUTION // CONTINUOUS EVOLUTION',
+      status: 'EVOLVING // ONLINE',
+    },
+    contact: {
+      ...content.contact,
+      message: '不追逐无意义的竞争，把时间留给真正的成长、创造与合作。如果你认同这种节奏，建立通信。',
+    },
+  };
 }
 
 export async function writeSiteContent(content: SiteContent, userEmail: string) {

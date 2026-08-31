@@ -2,19 +2,20 @@ import type { Metadata } from 'next';
 import './globals.css';
 
 export const metadata: Metadata = {
-  title: 'PLAYER // Tactical Profile',
-  description: '电竞战队风格的个人选手主页',
+  metadataBase: new URL('https://profile.andyyyy5.chatgpt.site'),
+  title: 'ANT1VOLVE 5 // True Evolution Profile',
+  description: '拒绝无意义的竞争，选择真正的进化。',
   openGraph: {
-    title: 'PHANTOM X // TACTICAL PROFILE',
-    description: '个人能力、项目与联络方式的战术档案。',
+    title: 'ANT1VOLVE 5 // TRUE EVOLUTION',
+    description: '拒绝无意义的竞争，选择真正的进化。',
     type: 'website',
-    images: ['/og.jpg'],
+    images: ['/og.png'],
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'PHANTOM X // TACTICAL PROFILE',
-    description: '个人能力、项目与联络方式的战术档案。',
-    images: ['/og.jpg'],
+    title: 'ANT1VOLVE 5 // TRUE EVOLUTION',
+    description: '拒绝无意义的竞争，选择真正的进化。',
+    images: ['/og.png'],
   },
 };
 

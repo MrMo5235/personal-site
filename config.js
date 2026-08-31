@@ -11,14 +11,14 @@
  */
 window.SITE_CONFIG = {
   meta: {
-    title: "PLAYER // Tactical Profile",
-    description: "电竞战队风格的个人选手主页"
+    title: "ANT1VOLVE 5 // True Evolution Profile",
+    description: "拒绝无意义的竞争，选择真正的进化。"
   },
 
   brand: {
-    name: "PHANTOM X",
-    mark: "PX",
-    division: "TACTICAL DIVISION"
+    name: "ANT1VOLVE 5",
+    mark: "AV5",
+    division: "ANTI-INVOLUTION // TRUE EVOLUTION"
   },
 
   navigation: [
@@ -34,24 +34,24 @@ window.SITE_CONFIG = {
   gallery: {
     speedSeconds: 58,
     images: [
-      { src: "og.jpg", alt: "PHANTOM X 战队视觉", position: "18% center" },
-      { src: "og.jpg", alt: "PHANTOM X 战术档案", position: "50% center" },
-      { src: "og.jpg", alt: "PHANTOM X 选手主页", position: "82% center" }
+      { src: "og.png", alt: "ANT1VOLVE 5 品牌视觉", position: "18% center" },
+      { src: "og.png", alt: "ANT1VOLVE 5 反内卷宣言", position: "50% center" },
+      { src: "og.png", alt: "ANT1VOLVE 5 个人主页", position: "82% center" }
       // { src: "photos/photo-01.jpg", alt: "照片说明" },
       // { src: "photos/photo-02.jpg", alt: "照片说明" }
     ]
   },
 
   player: {
-    id: "PX-01",
+    id: "AV5-01",
     name: "Your Name",
     callsign: "PLAYER",
     role: "Full-Stack Developer",
-    tagline: "把复杂问题拆解为清晰、可靠并且值得信赖的数字产品。",
-    focus: "Building digital experiences",
+    tagline: "拒绝无意义的竞争，选择真正的进化。",
+    focus: "ANTI-INVOLUTION // CONTINUOUS EVOLUTION",
     initials: "YN",
     avatar: "",
-    status: "READY FOR DEPLOYMENT"
+    status: "EVOLVING // ONLINE"
   },
 
   // 首屏右侧的快速数据，可直接增加新字段。
@@ -147,7 +147,7 @@ window.SITE_CONFIG = {
 
   contact: {
     heading: "LET'S\nQUEUE UP.",
-    message: "有新的任务、合作想法，或者只是想打声招呼？建立通信，我会尽快回应。",
+    message: "不追逐无意义的竞争，把时间留给真正的成长、创造与合作。如果你认同这种节奏，建立通信。",
     links: [
       { label: "GITHUB", value: "@yourname", url: "https://github.com/" },
       { label: "EMAIL", value: "your@email.com", url: "mailto:your@email.com" },

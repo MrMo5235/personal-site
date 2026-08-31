@@ -9,11 +9,11 @@ export const dynamic = 'force-dynamic';
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
   const { slug } = await params;
-  if (slug === 'new') return { title: 'New Note // PHANTOM X' };
+  if (slug === 'new') return { title: 'New Note // ANT1VOLVE 5' };
   const note = await getNoteBySlug(slug);
-  if (!note) return { title: 'Note Not Found // PHANTOM X' };
+  if (!note) return { title: 'Note Not Found // ANT1VOLVE 5' };
   return {
-    title: `${note.title} // PHANTOM X`,
+    title: `${note.title} // ANT1VOLVE 5`,
     description: note.summary,
     openGraph: { title: note.title, description: note.summary, type: 'article', images: [] },
     twitter: { title: note.title, description: note.summary, images: [] },
