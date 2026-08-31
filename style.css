@@ -136,6 +136,25 @@ h1 {
 .menu-toggle span:not(.sr-only) { display: block; height: 1px; margin: 6px 0; background: var(--text); transition: transform .2s ease; }
 .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0; }
 
+/* Photo ticker */
+.photo-ticker { position: relative; z-index: 4; padding: 0 clamp(20px, 5vw, 72px); border-bottom: 1px solid var(--line); background: #090a09; }
+.photo-ticker[hidden] { display: none; }
+.photo-ticker-shell { display: grid; grid-template-columns: 124px minmax(0, 1fr); max-width: 1320px; height: 96px; margin: 0 auto; border-inline: 1px solid var(--line); }
+.photo-ticker-label { display: flex; flex-direction: column; justify-content: center; align-items: flex-start; gap: 5px; padding: 0 17px; border-right: 1px solid var(--line); background: var(--panel); }
+.photo-ticker-label .status-dot { margin-bottom: 3px; }
+.photo-ticker-label strong { font: 800 11px/1 var(--font-display); letter-spacing: .08em; }
+.photo-ticker-label small { color: var(--muted); font-size: 7px; letter-spacing: .13em; }
+.photo-ticker-viewport { min-width: 0; overflow: hidden; -webkit-mask-image: linear-gradient(90deg, transparent, #000 3%, #000 97%, transparent); mask-image: linear-gradient(90deg, transparent, #000 3%, #000 97%, transparent); }
+.photo-ticker-track { display: flex; width: max-content; height: 100%; will-change: transform; animation: ticker-scroll var(--ticker-duration, 58s) linear infinite; }
+.photo-ticker:hover .photo-ticker-track, .photo-ticker:focus-within .photo-ticker-track { animation-play-state: paused; }
+.photo-ticker-group { display: flex; gap: 7px; height: 100%; padding: 7px 7px 7px 0; }
+.photo-ticker-item { position: relative; flex: 0 0 158px; height: 82px; margin: 0; overflow: hidden; border: 1px solid #34382f; background: #161914; clip-path: polygon(0 0, calc(100% - 12px) 0, 100% 12px, 100% 100%, 0 100%); }
+.photo-ticker-item::after { content: ""; position: absolute; inset: 0; pointer-events: none; background: linear-gradient(90deg, rgba(255,91,34,.13), transparent 40%); mix-blend-mode: screen; }
+.photo-ticker-item img { display: block; width: 100%; height: 100%; object-fit: cover; filter: saturate(.82) contrast(1.08); transition: transform .35s ease, filter .35s ease; }
+.photo-ticker-item:hover img { transform: scale(1.05); filter: saturate(1) contrast(1.05); }
+.photo-ticker-item.image-offline { display: grid; place-items: center; color: var(--muted); font-size: 7px; letter-spacing: .12em; }
+@keyframes ticker-scroll { to { transform: translateX(-50%); } }
+
 /* Shared section system */
 .content-section { position: relative; z-index: 1; padding: clamp(90px, 11vw, 168px) clamp(20px, 7vw, 108px); border-top: 1px solid var(--line); overflow: hidden; }
 .content-section > * { max-width: 1320px; margin-inline: auto; }
@@ -230,6 +249,9 @@ h1 {
   .site-nav a { padding: 17px 3px; border-bottom: 1px solid var(--line); }
   .site-nav a::after { display: none; }
   .menu-toggle { display: block; }
+  .photo-ticker { padding-inline: 16px; }
+  .photo-ticker-shell { grid-template-columns: 92px minmax(0, 1fr); }
+  .photo-ticker-label { padding-inline: 12px; }
   .hero-grid { grid-template-columns: 1fr; }
   .player-card { justify-self: start; max-width: 520px; }
   h1 { font-size: clamp(72px, 20vw, 145px); }
@@ -245,6 +267,13 @@ h1 {
   .brand-copy small { display: none; }
   .system-status time { display: none; }
   .site-nav { top: 70px; }
+  .photo-ticker { padding-inline: 0; }
+  .photo-ticker-shell { grid-template-columns: 72px minmax(0, 1fr); height: 78px; border-inline: 0; }
+  .photo-ticker-label { padding-inline: 9px; }
+  .photo-ticker-label strong { font-size: 9px; }
+  .photo-ticker-label small { display: none; }
+  .photo-ticker-group { gap: 5px; padding-block: 6px; }
+  .photo-ticker-item { flex-basis: 126px; height: 66px; }
   .hero { min-height: calc(100vh - 70px); padding-top: 46px; }
   .eyebrow { line-height: 1.5; }
   .hero-actions { flex-direction: column; }
@@ -263,4 +292,7 @@ h1 {
 
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { scroll-behavior: auto !important; transition: none !important; }
+  .photo-ticker-viewport { overflow-x: auto; -webkit-mask-image: none; mask-image: none; }
+  .photo-ticker-track { animation: none; }
+  .photo-ticker-group[aria-hidden="true"] { display: none; }
 }

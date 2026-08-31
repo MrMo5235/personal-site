@@ -103,6 +103,49 @@
     });
   }
 
+  function renderGallery() {
+    const ticker = document.getElementById('photo-ticker');
+    const track = document.getElementById('photo-ticker-track');
+    const images = (config.gallery?.images || []).filter((item) => item?.src);
+
+    if (!images.length) {
+      ticker.hidden = true;
+      return;
+    }
+
+    const repeatedImages = [];
+    while (repeatedImages.length < Math.max(8, images.length)) repeatedImages.push(...images);
+    const galleryItems = repeatedImages.slice(0, Math.max(8, images.length));
+    const duration = Math.max(20, Number(config.gallery?.speedSeconds) || 58);
+    track.style.setProperty('--ticker-duration', `${duration}s`);
+
+    const createGroup = (isDuplicate) => {
+      const group = createElement('div', 'photo-ticker-group');
+      if (isDuplicate) group.setAttribute('aria-hidden', 'true');
+
+      galleryItems.forEach((item) => {
+        const frame = createElement('figure', 'photo-ticker-item');
+        const image = createElement('img');
+        image.src = item.src;
+        image.alt = isDuplicate ? '' : (item.alt || '展示照片');
+        image.loading = 'lazy';
+        image.decoding = 'async';
+        if (item.position) image.style.objectPosition = item.position;
+        image.addEventListener('error', () => {
+          frame.classList.add('image-offline');
+          image.remove();
+          frame.appendChild(createElement('span', '', 'MEDIA OFFLINE'));
+        }, { once: true });
+        frame.appendChild(image);
+        group.appendChild(frame);
+      });
+
+      return group;
+    };
+
+    track.append(createGroup(false), createGroup(true));
+  }
+
   function renderProfile() {
     const bio = document.getElementById('profile-bio');
     (config.profile?.bio || []).forEach((paragraph) => bio.appendChild(createElement('p', '', paragraph)));
@@ -244,6 +287,7 @@
   renderNavigation();
   renderIdentity();
   renderStats();
+  renderGallery();
   renderProfile();
   renderLoadout();
   renderOperations();

@@ -29,6 +29,19 @@ window.SITE_CONFIG = {
     { label: "COMMS", target: "contact" }
   ],
 
+  // 导航栏下方的照片滚动栏。
+  // 把照片放进 photos 文件夹，再按下面格式添加即可；数量不限。
+  gallery: {
+    speedSeconds: 58,
+    images: [
+      { src: "og.jpg", alt: "PHANTOM X 战队视觉", position: "18% center" },
+      { src: "og.jpg", alt: "PHANTOM X 战术档案", position: "50% center" },
+      { src: "og.jpg", alt: "PHANTOM X 选手主页", position: "82% center" }
+      // { src: "photos/photo-01.jpg", alt: "照片说明" },
+      // { src: "photos/photo-02.jpg", alt: "照片说明" }
+    ]
+  },
+
   player: {
     id: "PX-01",
     name: "Your Name",
