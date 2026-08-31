@@ -15,6 +15,13 @@
       "when": 1788192677905,
       "tag": "0001_kind_warbound",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "6",
+      "when": 1788197391477,
+      "tag": "0002_puzzling_absorbing_man",
+      "breakpoints": true
     }
   ]
 }

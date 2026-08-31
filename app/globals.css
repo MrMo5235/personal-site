@@ -75,8 +75,9 @@ body::before {
 }
 
 .site-header {
-  position: relative;
-  z-index: 5;
+  position: sticky;
+  top: 0;
+  z-index: 40;
   height: 84px;
   display: flex;
   align-items: center;
@@ -86,6 +87,8 @@ body::before {
   background: rgba(7,8,7,.86);
   backdrop-filter: blur(14px);
 }
+
+section[id] { scroll-margin-top: 104px; }
 
 .brand { display: flex; align-items: center; gap: 14px; color: inherit; text-decoration: none; }
 .brand-mark {
@@ -435,26 +438,32 @@ h1 {
 /* Frontend-integrated admin editing */
 .identity-switch[type="button"] { cursor: pointer; font-family: var(--font-mono); text-align: left; }
 .identity-switch.active { border-color: var(--signal); box-shadow: 0 0 0 1px rgba(200,255,49,.15) inset; }
-.inline-admin-bar { position: sticky; top: 0; z-index: 30; display: flex; align-items: center; justify-content: space-between; gap: 20px; min-height: 64px; padding: 10px clamp(20px, 5vw, 72px); border-bottom: 1px solid rgba(200,255,49,.35); background: rgba(8,10,7,.96); backdrop-filter: blur(18px); }
+.inline-admin-bar { position: sticky; top: 84px; z-index: 35; display: flex; align-items: center; justify-content: space-between; gap: 20px; min-height: 64px; padding: 10px clamp(20px, 5vw, 72px); border-bottom: 1px solid rgba(200,255,49,.35); background: rgba(8,10,7,.96); backdrop-filter: blur(18px); }
 .inline-admin-bar > div { display: flex; align-items: center; gap: 10px; }
 .inline-admin-bar > div:last-child { justify-content: flex-end; flex-wrap: wrap; }
 .inline-admin-bar strong { color: var(--signal); font-size: 9px; letter-spacing: .12em; }
 .inline-admin-bar small { color: var(--muted); font-size: 8px; }
 .inline-admin-bar .button { width: auto; min-height: 38px; padding: 0 14px; font-size: 8px; }
 
-.inline-media-panel { position: relative; z-index: 12; padding: 24px clamp(20px, 5vw, 72px); border-bottom: 1px solid var(--line); background: #0c0e0b; }
-.inline-media-heading span { display: block; color: var(--accent); font-size: 9px; letter-spacing: .14em; }
-.inline-media-heading strong { display: block; margin-top: 7px; color: var(--muted); font-size: 9px; font-weight: 500; }
-.inline-media-panel form { display: grid; grid-template-columns: 1.2fr 1fr auto; gap: 9px; max-width: 980px; margin-top: 18px; }
-.inline-media-panel input, .inline-media-panel button { border-radius: 0; border-color: var(--input); background: #080a07; color: var(--text); }
-.inline-media-list { display: flex; gap: 8px; margin-top: 14px; padding-bottom: 5px; overflow-x: auto; }
-.inline-media-list > div { flex: 0 0 250px; display: grid; grid-template-columns: 54px 1fr auto; align-items: center; gap: 9px; min-height: 62px; padding: 6px; border: 1px solid var(--line); }
-.inline-media-list img, .inline-media-list > div > span { width: 54px; height: 48px; object-fit: cover; display: grid; place-items: center; background: var(--panel); color: var(--accent); font-size: 8px; }
-.inline-media-list p { min-width: 0; margin: 0; }
-.inline-media-list p strong, .inline-media-list p small { display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.inline-media-list p strong { font-size: 9px; }
-.inline-media-list p small { margin-top: 5px; color: var(--muted); font-size: 7px; }
-.inline-media-list button { padding: 7px; border: 0; color: var(--destructive); font: 700 7px var(--font-mono); cursor: pointer; }
+.context-upload { position: relative; z-index: 12; max-width: 1320px; margin: 0 auto; padding: 18px; border-inline: 1px solid var(--line); border-bottom: 1px solid var(--line); background: #0c0e0b; }
+.context-upload-heading span { display: block; color: var(--accent); font-size: 9px; letter-spacing: .14em; }
+.context-upload-heading strong { display: block; margin-top: 7px; color: var(--muted); font-size: 9px; font-weight: 500; }
+.context-upload form { display: grid; grid-template-columns: 1.2fr 1fr auto; gap: 9px; max-width: 980px; margin-top: 14px; }
+.context-upload input, .context-upload button { border-radius: 0; border-color: var(--input); background: #080a07; color: var(--text); }
+.context-media-list { display: flex; gap: 8px; margin-top: 14px; padding-bottom: 5px; overflow-x: auto; }
+.context-media-list > div { flex: 0 0 250px; display: grid; grid-template-columns: 54px 1fr auto; align-items: center; gap: 9px; min-height: 62px; padding: 6px; border: 1px solid var(--line); }
+.context-media-list img { width: 54px; height: 48px; object-fit: cover; background: var(--panel); }
+.context-media-list p { min-width: 0; margin: 0; }
+.context-media-list p strong, .context-media-list p small { display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.context-media-list p strong { font-size: 9px; }
+.context-media-list p small { margin-top: 5px; color: var(--muted); font-size: 7px; }
+.context-media-list button { padding: 7px; border: 0; color: var(--destructive); font: 700 7px var(--font-mono); cursor: pointer; }
+
+.avatar-upload { display: grid; grid-template-columns: 1fr auto; align-items: end; gap: 8px; padding: 12px 4px; border-bottom: 1px solid var(--line); }
+.avatar-upload label { display: grid; gap: 7px; min-width: 0; }
+.avatar-upload label > span { color: var(--accent); font-size: 8px; letter-spacing: .11em; }
+.avatar-upload input[type="file"] { min-width: 0; width: 100%; color: var(--muted); font: 8px var(--font-mono); }
+.avatar-upload .button { width: auto; min-height: 36px; padding: 0 10px; font-size: 7px; }
 
 .inline-callsign { width: min(100%, 780px); height: auto; padding: 0; border: 0; border-bottom: 2px dashed rgba(200,255,49,.45); border-radius: 0; background: transparent; color: var(--text); font: 900 clamp(72px, 12vw, 170px)/.82 var(--font-display); letter-spacing: -.05em; }
 .inline-hero-fields { display: grid; gap: 10px; max-width: 720px; margin: 28px 0 34px; }
@@ -520,6 +529,11 @@ h1 {
 .note-editor-toolbar .button { width: auto; min-height: 38px; }
 .note-import { position: relative; overflow: hidden; cursor: pointer; }
 .note-import input { position: absolute; inset: 0; opacity: 0; cursor: pointer; }
+.note-import-panel { display: flex; align-items: center; justify-content: space-between; gap: 22px; margin-top: 18px; padding: 18px 20px; border: 1px dashed rgba(200,255,49,.35); background: rgba(200,255,49,.025); }
+.note-import-panel > div { display: grid; gap: 7px; }
+.note-import-panel span { color: var(--signal); font-size: 8px; letter-spacing: .12em; }
+.note-import-panel strong { color: var(--muted); font-size: 8px; font-weight: 500; line-height: 1.6; }
+.note-import-panel .button { flex: 0 0 auto; width: auto; }
 .note-meta-editor { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-top: 18px; padding: 22px; border: 1px solid var(--line); background: var(--panel); }
 .note-meta-editor label { display: grid; gap: 8px; }.note-meta-editor label > span { color: var(--muted); font-size: 8px; letter-spacing: .1em; }
 .note-meta-editor .wide { grid-column: 1 / -1; }.note-meta-editor input, .note-meta-editor textarea { border-radius: 0; background: #090b08; color: var(--text); }.note-meta-editor textarea { min-height: 88px; }
@@ -533,17 +547,20 @@ h1 {
 @media (max-width: 860px) {
   .inline-admin-bar { align-items: flex-start; flex-direction: column; }
   .inline-admin-bar > div:last-child { justify-content: flex-start; }
-  .inline-media-panel form, .markdown-workbench { grid-template-columns: 1fr; }
+  .context-upload form, .markdown-workbench { grid-template-columns: 1fr; }
   .markdown-source { border-right: 0; border-bottom: 1px solid var(--line); }
   .note-editor-toolbar { position: static; align-items: flex-start; flex-direction: column; }
   .note-meta-editor { grid-template-columns: 1fr; }.note-meta-editor .wide { grid-column: auto; }
   .note-header-actions { gap: 10px; }.note-header-actions a:first-child { display: none; }
+  .note-import-panel { align-items: flex-start; flex-direction: column; }
 }
 
 @media (max-width: 560px) {
+  .inline-admin-bar { top: 70px; }
   .inline-admin-bar > div:last-child { display: grid; grid-template-columns: 1fr 1fr; width: 100%; }
   .inline-admin-bar .button { justify-content: center; }
-  .inline-media-panel form { grid-template-columns: 1fr; }
+  .context-upload form { grid-template-columns: 1fr; }
+  .avatar-upload { grid-template-columns: 1fr; }
   .inline-contact-row { grid-template-columns: 1fr; padding: 12px 0; }
   .notes-create { margin: -25px 0 30px; }
   .note-header .brand-copy { display: none; }

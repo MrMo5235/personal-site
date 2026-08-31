@@ -17,6 +17,7 @@ export const mediaAssets = sqliteTable(
     contentType: text('content_type').notNull(),
     size: integer('size').notNull(),
     category: text('category', { enum: ['image', 'document'] }).notNull(),
+    placement: text('placement', { enum: ['gallery', 'avatar', 'document'] }).notNull().default('gallery'),
     alt: text('alt').notNull().default(''),
     sortOrder: integer('sort_order').notNull().default(0),
     createdAt: text('created_at').notNull(),
@@ -25,6 +26,7 @@ export const mediaAssets = sqliteTable(
   (table) => [
     index('idx_media_category_sort').on(table.category, table.sortOrder, table.createdAt),
     check('media_assets_category_check', sql`${table.category} IN ('image', 'document')`),
+    check('media_assets_placement_check', sql`${table.placement} IN ('gallery', 'avatar', 'document')`),
   ],
 );
 

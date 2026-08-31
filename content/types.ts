@@ -52,6 +52,7 @@ export type MediaAsset = {
   contentType: string;
   size: number;
   category: 'image' | 'document';
+  placement: 'gallery' | 'avatar' | 'document';
   alt: string;
   sortOrder: number;
   createdAt: string;

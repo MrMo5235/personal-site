@@ -38,6 +38,7 @@ async function initializeDatabase() {
         content_type TEXT NOT NULL,
         size INTEGER NOT NULL,
         category TEXT NOT NULL CHECK (category IN ('image', 'document')),
+        placement TEXT NOT NULL DEFAULT 'gallery' CHECK (placement IN ('gallery', 'avatar', 'document')),
         alt TEXT NOT NULL DEFAULT '',
         sort_order INTEGER NOT NULL DEFAULT 0,
         created_at TEXT NOT NULL,
@@ -67,6 +68,16 @@ async function initializeDatabase() {
       ON notes(published, updated_at)
     `),
   ]);
+
+  const mediaColumns = await db.prepare("PRAGMA table_info('media_assets')").all<{ name: string }>();
+  if (!(mediaColumns.results || []).some((column) => column.name === 'placement')) {
+    await db
+      .prepare("ALTER TABLE media_assets ADD COLUMN placement TEXT NOT NULL DEFAULT 'gallery' CHECK (placement IN ('gallery', 'avatar', 'document'))")
+      .run();
+    await db
+      .prepare("UPDATE media_assets SET placement = CASE WHEN category = 'document' THEN 'document' ELSE 'gallery' END")
+      .run();
+  }
 
   const existing = await db
     .prepare('SELECT id FROM site_content WHERE id = ?')
@@ -204,6 +215,7 @@ type MediaRow = {
   content_type: string;
   size: number;
   category: 'image' | 'document';
+  placement: 'gallery' | 'avatar' | 'document';
   alt: string;
   sort_order: number;
   created_at: string;
@@ -214,9 +226,9 @@ export async function listMedia(): Promise<MediaAsset[]> {
   const { db } = getBindings();
   const result = await db
     .prepare(`
-      SELECT id, name, content_type, size, category, alt, sort_order, created_at
+      SELECT id, name, content_type, size, category, placement, alt, sort_order, created_at
       FROM media_assets
-      ORDER BY category ASC, sort_order ASC, created_at DESC
+      ORDER BY placement ASC, sort_order ASC, created_at DESC
     `)
     .all<MediaRow>();
   return (result.results || []).map((row) => ({
@@ -225,6 +237,7 @@ export async function listMedia(): Promise<MediaAsset[]> {
     contentType: row.content_type,
     size: row.size,
     category: row.category,
+    placement: row.placement,
     alt: row.alt,
     sortOrder: row.sort_order,
     createdAt: row.created_at,
@@ -237,7 +250,7 @@ export async function getMediaRecord(id: string) {
   const { db } = getBindings();
   return db
     .prepare(`
-      SELECT id, object_key, name, content_type, size, category, alt, sort_order, created_at
+      SELECT id, object_key, name, content_type, size, category, placement, alt, sort_order, created_at
       FROM media_assets WHERE id = ?
     `)
     .bind(id)

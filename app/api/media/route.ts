@@ -26,6 +26,7 @@ export async function POST(request: Request) {
   const form = await request.formData();
   const file = form.get('file');
   const rawAlt = form.get('alt');
+  const rawPlacement = form.get('placement');
   const alt = (typeof rawAlt === 'string' ? rawAlt : '').slice(0, 240);
   if (!(file instanceof File)) {
     return Response.json({ error: 'Please select a file.' }, { status: 400 });
@@ -43,13 +44,19 @@ export async function POST(request: Request) {
     return Response.json({ error: 'Unsupported file type.' }, { status: 415 });
   }
 
+  const placement = category === 'document'
+    ? 'document'
+    : rawPlacement === 'avatar'
+      ? 'avatar'
+      : 'gallery';
+
   const id = crypto.randomUUID();
   const safeName = sanitizeFilename(file.name);
   const objectKey = `uploads/${id}/${safeName}`;
   const now = new Date().toISOString();
   const currentMax = await env.DB
-    .prepare('SELECT COALESCE(MAX(sort_order), -1) AS value FROM media_assets WHERE category = ?')
-    .bind(category)
+    .prepare('SELECT COALESCE(MAX(sort_order), -1) AS value FROM media_assets WHERE placement = ?')
+    .bind(placement)
     .first<{ value: number }>();
   const sortOrder = Number(currentMax?.value ?? -1) + 1;
 
@@ -62,8 +69,8 @@ export async function POST(request: Request) {
     await env.DB
       .prepare(`
         INSERT INTO media_assets
-          (id, object_key, name, content_type, size, category, alt, sort_order, created_at, created_by)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+          (id, object_key, name, content_type, size, category, placement, alt, sort_order, created_at, created_by)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
       `)
       .bind(
         id,
@@ -72,6 +79,7 @@ export async function POST(request: Request) {
         file.type,
         file.size,
         category,
+        placement,
         alt,
         sortOrder,
         now,
@@ -90,6 +98,7 @@ export async function POST(request: Request) {
       contentType: file.type,
       size: file.size,
       category,
+      placement,
       alt,
       sortOrder,
       createdAt: now,

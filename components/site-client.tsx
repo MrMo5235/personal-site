@@ -1,9 +1,9 @@
 'use client';
 // oxlint-disable next/no-img-element
+// oxlint-disable next/no-html-link-for-pages -- Native navigation avoids the current Vinext client-link failure on Note routes.
 
 import { Fragment, useEffect, useMemo, useState } from 'react';
 import type { CSSProperties, SyntheticEvent } from 'react';
-import Link from 'next/link';
 import type { GalleryImage, MediaAsset, NoteSummary, SiteContent } from '@/content/types';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -32,7 +32,6 @@ export function SiteClient({
   const [clock, setClock] = useState('--:--:--');
   const [draft, setDraft] = useState(content);
   const [editMode, setEditMode] = useState(false);
-  const [mediaOpen, setMediaOpen] = useState(false);
   const [mediaItems, setMediaItems] = useState(media);
   const [status, setStatus] = useState('READY');
   const [busy, setBusy] = useState(false);
@@ -70,7 +69,7 @@ export function SiteClient({
 
   const galleryImages = useMemo(() => {
     const uploaded = mediaItems
-      .filter((item) => item.category === 'image')
+      .filter((item) => item.placement === 'gallery')
       .map<GalleryImage>((item) => ({ src: item.url, alt: item.alt || item.name }));
     return uploaded.length ? uploaded : draft.gallery.images;
   }, [draft.gallery.images, mediaItems]);
@@ -82,7 +81,8 @@ export function SiteClient({
     return repeated.slice(0, Math.max(8, galleryImages.length));
   }, [galleryImages]);
 
-  const documents = mediaItems.filter((item) => item.category === 'document');
+  const documents = mediaItems.filter((item) => item.placement === 'document');
+  const galleryMedia = mediaItems.filter((item) => item.placement === 'gallery');
   const navigation = draft.navigation.map((item) =>
     item.target === 'operations' ? { label: 'NOTES', target: 'notes' } : item,
   );
@@ -145,8 +145,16 @@ export function SiteClient({
       const result = (await response.json()) as MediaAsset & { error?: string };
       if (!response.ok) throw new Error(result.error || '上传失败');
       setMediaItems((items) => [...items, result]);
+      if (result.placement === 'avatar') {
+        setDraft((current) => ({
+          ...current,
+          player: { ...current.player, avatar: result.url },
+        }));
+        setStatus('头像已上传 // 请保存全部修改');
+      } else {
+        setStatus('UPLOAD COMPLETE');
+      }
       form.reset();
-      setStatus('UPLOAD COMPLETE');
     } catch (error) {
       setStatus(error instanceof Error ? error.message : '上传失败');
     } finally {
@@ -202,20 +210,23 @@ export function SiteClient({
         <aside className="inline-admin-bar">
           <div><span className="status-dot" /><strong>FRONTEND EDIT MODE</strong><small>{status}</small></div>
           <div>
-            <Button variant="outline" onClick={() => setMediaOpen((value) => !value)}>{mediaOpen ? '关闭文件面板' : '图片 / 文件'}</Button>
-            <Link className="button button-ghost" href="/notes/new">+ 新建笔记</Link>
+            <a className="button button-ghost" href="/notes/new">+ 新建笔记</a>
             <Button variant="outline" onClick={cancelEdits} disabled={busy}>取消</Button>
             <Button onClick={saveContent} disabled={busy}>{busy ? '保存中…' : '保存全部修改'}</Button>
           </div>
         </aside>
       )}
 
-      {auth.isAdmin && editMode && mediaOpen && (
-        <InlineMediaPanel media={mediaItems} busy={busy} onUpload={uploadMedia} onDelete={deleteMedia} />
-      )}
-
       {tickerImages.length > 0 && (
         <section className="photo-ticker" aria-label="照片展示滚动栏">
+          {auth.isAdmin && editMode && (
+            <GalleryUploadPanel
+              media={galleryMedia}
+              busy={busy}
+              onUpload={uploadMedia}
+              onDelete={deleteMedia}
+            />
+          )}
           <div className="photo-ticker-shell">
             <div className="photo-ticker-label" aria-hidden="true"><span className="status-dot" /><strong>MEDIA FEED</strong><small>LIVE ARCHIVE</small></div>
             <div className="photo-ticker-viewport">
@@ -259,6 +270,17 @@ export function SiteClient({
                 <div className="crosshair" aria-hidden="true" />
                 {draft.player.avatar ? <img className="player-avatar" src={draft.player.avatar} alt={`${draft.player.name} 的照片`} /> : <span>{draft.player.initials}</span>}
               </div>
+              {auth.isAdmin && editMode && (
+                <form className="avatar-upload" onSubmit={uploadMedia}>
+                  <input type="hidden" name="placement" value="avatar" />
+                  <input type="hidden" name="alt" value={`${draft.player.name} 的档案照片`} />
+                  <label>
+                    <span>档案照片</span>
+                    <input name="file" type="file" accept="image/jpeg,image/png,image/webp,image/gif,image/avif" required />
+                  </label>
+                  <Button type="submit" variant="outline" disabled={busy}>{busy ? '上传中…' : '上传 / 替换'}</Button>
+                </form>
+              )}
               <div className="player-card-meta"><span>STATUS</span>{editMode ? <Input value={draft.player.status} onChange={(event) => setDraft({ ...draft, player: { ...draft.player, status: event.target.value } })} /> : <strong><i /> {draft.player.status}</strong>}</div>
               <dl className="quick-stats">
                 {Object.entries(draft.stats).map(([label, value]) => (
@@ -317,15 +339,15 @@ export function SiteClient({
 
         <section className="content-section operations-section notes-section reveal" id="notes">
           <SectionHeading index="04" kicker="FIELD ARCHIVE" title="NOTES" note="TACTICS, PROJECTS & PERSONAL LOGS" />
-          {auth.isAdmin && editMode && <Link className="button button-primary notes-create" href="/notes/new">+ CREATE NEW NOTE</Link>}
+          {auth.isAdmin && editMode && <a className="button button-primary notes-create" href="/notes/new">+ CREATE NEW NOTE</a>}
           <div className="operations-list notes-list">
             {notes.length === 0 && <p className="notes-empty">暂无已发布笔记。</p>}
             {notes.map((note, index) => (
-              <Link className="operation-card note-card" href={`/notes/${note.slug}`} key={note.id}>
+              <a className="operation-card note-card" href={`/notes/${note.slug}`} aria-label={`打开笔记：${note.title}`} key={note.id}>
                 <div className="operation-lead"><span className="operation-number">{String(index + 1).padStart(2, '0')}</span><div><small>FIELD NOTE // {formatDate(note.updatedAt)}</small><h3>{note.title}</h3></div></div>
                 <div className="operation-body"><p>{note.summary || '打开笔记查看完整内容。'}</p><div className="operation-tags">{note.tags.map((tag) => <span key={tag}>#{tag}</span>)}</div></div>
                 <div className="operation-actions"><span className="operation-status active">READABLE</span><span>OPEN NOTE ↗</span></div>
-              </Link>
+              </a>
             ))}
           </div>
         </section>
@@ -358,12 +380,27 @@ export function SiteClient({
   );
 }
 
-function InlineMediaPanel({ media, busy, onUpload, onDelete }: { media: MediaAsset[]; busy: boolean; onUpload: (event: SyntheticEvent<HTMLFormElement>) => void; onDelete: (asset: MediaAsset) => void }) {
+function GalleryUploadPanel({ media, busy, onUpload, onDelete }: { media: MediaAsset[]; busy: boolean; onUpload: (event: SyntheticEvent<HTMLFormElement>) => void; onDelete: (asset: MediaAsset) => void }) {
   return (
-    <aside className="inline-media-panel">
-      <div className="inline-media-heading"><div><span>MEDIA CONTROL</span><strong>图片会进入顶部滚动栏，文档会进入公开文件区。</strong></div></div>
-      <form onSubmit={onUpload}><Input name="file" type="file" required /><Input name="alt" placeholder="图片说明 / 文档描述" /><Button type="submit" disabled={busy}>UPLOAD</Button></form>
-      <div className="inline-media-list">{media.map((asset) => <div key={asset.id}>{asset.category === 'image' ? <img src={asset.url} alt={asset.alt} /> : <span>DOC</span>}<p><strong>{asset.name}</strong><small>{asset.alt || asset.contentType}</small></p><button type="button" onClick={() => onDelete(asset)} disabled={busy}>DELETE</button></div>)}</div>
+    <aside className="context-upload gallery-upload">
+      <div className="context-upload-heading"><span>滚动栏照片</span><strong>只管理顶部滚动展示，不会替换档案照片。</strong></div>
+      <form onSubmit={onUpload}>
+        <input type="hidden" name="placement" value="gallery" />
+        <Input name="file" type="file" accept="image/jpeg,image/png,image/webp,image/gif,image/avif" required />
+        <Input name="alt" placeholder="照片说明" />
+        <Button type="submit" disabled={busy}>{busy ? '上传中…' : '上传到滚动栏'}</Button>
+      </form>
+      {media.length > 0 && (
+        <div className="context-media-list">
+          {media.map((asset) => (
+            <div key={asset.id}>
+              <img src={asset.url} alt={asset.alt} />
+              <p><strong>{asset.name}</strong><small>{asset.alt || '滚动栏照片'}</small></p>
+              <button type="button" onClick={() => onDelete(asset)} disabled={busy}>删除</button>
+            </div>
+          ))}
+        </div>
+      )}
     </aside>
   );
 }

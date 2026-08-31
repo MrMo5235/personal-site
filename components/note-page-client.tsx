@@ -1,10 +1,10 @@
 'use client';
+// oxlint-disable next/no-html-link-for-pages -- Note navigation intentionally performs a full same-origin page load.
 
 import { ChangeEvent, useMemo, useState } from 'react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import TurndownService from 'turndown';
-import Link from 'next/link';
 import type { Note } from '@/content/types';
 import { normalizeNoteSlug } from '@/lib/notes';
 import { Button } from '@/components/ui/button';
@@ -138,12 +138,12 @@ export function NotePageClient({ note, auth }: { note: Note | null; auth: NoteAu
   return (
     <div className="note-shell">
       <header className="note-header">
-        <Link className="brand" href="/#notes">
+        <a className="brand" href="/#notes">
           <span className="brand-mark">A5</span>
           <span className="brand-copy"><strong>ANT1VOLVE 5</strong><small>FIELD NOTES // TRUE EVOLUTION</small></span>
-        </Link>
+        </a>
         <div className="note-header-actions">
-          <Link href="/#notes">← ALL NOTES</Link>
+          <a href="/#notes">← ALL NOTES</a>
           {auth.isAdmin ? (
             <>
               <button type="button" onClick={() => setEditing((value) => !value)}>
@@ -165,13 +165,17 @@ export function NotePageClient({ note, auth }: { note: Note | null; auth: NoteAu
             <div><span>ADMIN EDIT MODE</span><strong>{status}</strong></div>
             <div>
               {note && <Button variant="destructive" onClick={remove} disabled={busy}>删除</Button>}
-              <label className="button button-ghost note-import">
-                导入 MD / DOCX
-                <input type="file" accept=".md,.markdown,.docx" onChange={importDocument} disabled={busy} />
-              </label>
               <Button onClick={save} disabled={busy}>{busy ? '处理中…' : '保存笔记'}</Button>
             </div>
           </div>
+
+          <section className="note-import-panel">
+            <div><span>NOTE DOCUMENT IMPORT</span><strong>将 Markdown 或 Word 文档解析到当前笔记，检查预览后再保存。</strong></div>
+            <label className="button button-ghost note-import">
+              选择 MD / DOCX 文件
+              <input type="file" accept=".md,.markdown,.docx" onChange={importDocument} disabled={busy} />
+            </label>
+          </section>
 
           <section className="note-meta-editor">
             <label htmlFor="note-title"><span>标题</span><Input id="note-title" value={draft.title} onChange={(event) => setDraft({ ...draft, title: event.target.value })} /></label>

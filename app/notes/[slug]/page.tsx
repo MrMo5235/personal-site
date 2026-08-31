@@ -1,5 +1,5 @@
+// oxlint-disable next/no-html-link-for-pages -- The fallback link must bypass client-side routing.
 import type { Metadata } from 'next';
-import Link from 'next/link';
 import { NotePageClient } from '@/components/note-page-client';
 import { getNoteBySlug } from '@/db/runtime';
 import { isAdminEmail } from '@/lib/admin-auth';
@@ -32,7 +32,7 @@ export default async function NotePage({ params }: { params: Promise<{ slug: str
         <span>404 // ARCHIVE MISS</span>
         <h1>NOTE NOT FOUND</h1>
         <p>这篇笔记不存在、尚未发布，或者已经被移除。</p>
-        <Link className="button button-primary" href="/#notes">返回笔记列表</Link>
+        <a className="button button-primary" href="/#notes">返回笔记列表</a>
       </main>
     );
   }
