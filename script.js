@@ -1,194 +1,254 @@
-// === Matrix Rain Background ===
-(function initMatrix() {
-  const canvas = document.getElementById('matrix-bg');
-  const ctx = canvas.getContext('2d');
+(function bootSite() {
+  'use strict';
 
-  function resize() {
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
+  const config = window.SITE_CONFIG;
+  if (!config) {
+    document.body.innerHTML = '<p class="config-error">CONFIG OFFLINE // 未找到 config.js</p>';
+    return;
   }
-  resize();
-  window.addEventListener('resize', resize);
 
-  const chars = 'アイウエオカキクケコサシスセソタチツテトナニヌネノハヒフヘホマミムメモヤユヨラリルレロワヲン0123456789ABCDEF';
-  const fontSize = 14;
-  const columns = Math.floor(canvas.width / fontSize);
-  const drops = Array(columns).fill(1);
+  const $ = (selector, root = document) => root.querySelector(selector);
 
-  function draw() {
-    ctx.fillStyle = 'rgba(10, 10, 15, 0.05)';
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
+  const setText = (id, value) => {
+    const element = document.getElementById(id);
+    if (element && value !== undefined && value !== null) element.textContent = value;
+  };
 
-    ctx.fillStyle = '#00ff41';
-    ctx.font = `${fontSize}px monospace`;
+  const createElement = (tag, className, text) => {
+    const element = document.createElement(tag);
+    if (className) element.className = className;
+    if (text !== undefined && text !== null) element.textContent = text;
+    return element;
+  };
 
-    for (let i = 0; i < drops.length; i++) {
-      const char = chars[Math.floor(Math.random() * chars.length)];
-      ctx.fillText(char, i * fontSize, drops[i] * fontSize);
+  const displayValue = (value) => {
+    if (Array.isArray(value)) return value.join(' / ');
+    if (value && typeof value === 'object') return Object.values(value).join(' / ');
+    return String(value ?? '—');
+  };
 
-      if (drops[i] * fontSize > canvas.height && Math.random() > 0.975) {
-        drops[i] = 0;
-      }
-      drops[i]++;
+  const setMultilineText = (element, value) => {
+    if (!element) return;
+    const lines = String(value || '').split('\n');
+    lines.forEach((line, index) => {
+      if (index) element.appendChild(document.createElement('br'));
+      element.appendChild(document.createTextNode(line));
+    });
+  };
+
+  const setExternalLink = (anchor, url) => {
+    anchor.href = url || '#';
+    if (url && !url.startsWith('mailto:') && !url.startsWith('tel:') && !url.startsWith('#')) {
+      anchor.target = '_blank';
+      anchor.rel = 'noopener noreferrer';
+    }
+  };
+
+  function applyMetadata() {
+    document.title = config.meta?.title || `${config.player.callsign} // Tactical Profile`;
+    const description = $('meta[name="description"]');
+    if (description && config.meta?.description) description.content = config.meta.description;
+  }
+
+  function renderIdentity() {
+    setText('brand-mark', config.brand?.mark);
+    setText('brand-name', config.brand?.name);
+    setText('player-callsign', config.player?.callsign);
+    setText('player-role', config.player?.role);
+    setText('player-tagline', config.player?.tagline);
+    setText('current-focus', config.player?.focus);
+    setText('avatar-initials', config.player?.initials);
+    setText('signature-name', config.player?.name);
+    setText('footer-brand', config.brand?.name);
+    setText('footer-year', new Date().getFullYear());
+    setText('profile-heading', '');
+    setMultilineText(document.getElementById('profile-heading'), config.profile?.heading);
+    setText('contact-heading', '');
+    setMultilineText(document.getElementById('contact-heading'), config.contact?.heading);
+    setText('contact-message', config.contact?.message);
+
+    const cardIndex = $('.card-index');
+    if (cardIndex) cardIndex.textContent = config.player?.id || 'PX-01';
+    const status = $('.player-card-meta strong');
+    if (status) {
+      status.replaceChildren(createElement('i'), document.createTextNode(` ${config.player?.status || 'ONLINE'}`));
+    }
+
+    if (config.player?.avatar) {
+      const frame = $('.avatar-frame');
+      const image = createElement('img', 'player-avatar');
+      image.src = config.player.avatar;
+      image.alt = `${config.player.name || config.player.callsign} 的照片`;
+      image.addEventListener('error', () => image.remove(), { once: true });
+      frame?.prepend(image);
     }
   }
 
-  setInterval(draw, 50);
-})();
-
-// === Typing Effect for Role ===
-(function initTyping() {
-  const el = document.getElementById('typed-role');
-  const roles = [
-    'Full-Stack Developer',
-    'Open Source Enthusiast',
-    'System Architect',
-    'Bug Hunter',
-    'Coffee ☕ → Code Converter',
-  ];
-
-  let roleIndex = 0;
-  let charIndex = 0;
-  let deleting = false;
-
-  function type() {
-    const current = roles[roleIndex];
-
-    if (!deleting) {
-      el.textContent = current.substring(0, charIndex + 1);
-      charIndex++;
-      if (charIndex === current.length) {
-        deleting = true;
-        setTimeout(type, 2000);
-        return;
-      }
-      setTimeout(type, 60 + Math.random() * 40);
-    } else {
-      el.textContent = current.substring(0, charIndex - 1);
-      charIndex--;
-      if (charIndex === 0) {
-        deleting = false;
-        roleIndex = (roleIndex + 1) % roles.length;
-        setTimeout(type, 400);
-        return;
-      }
-      setTimeout(type, 30);
-    }
+  function renderNavigation() {
+    const nav = document.getElementById('site-nav');
+    (config.navigation || []).forEach((item, index) => {
+      const link = createElement('a', index === 0 ? 'active' : '', item.label);
+      link.href = `#${item.target}`;
+      link.dataset.target = item.target;
+      nav.appendChild(link);
+    });
   }
 
-  setTimeout(type, 1000);
-})();
+  function renderStats() {
+    const stats = document.getElementById('quick-stats');
+    Object.entries(config.stats || {}).forEach(([label, value]) => {
+      const item = createElement('div');
+      item.append(createElement('dt', '', label), createElement('dd', '', displayValue(value)));
+      stats.appendChild(item);
+    });
+  }
 
-// === Scroll-based Section Reveal ===
-(function initScrollReveal() {
-  const sections = document.querySelectorAll('.section:not(.hero)');
-  sections.forEach(section => {
-    section.classList.add('fade-in');
-  });
+  function renderProfile() {
+    const bio = document.getElementById('profile-bio');
+    (config.profile?.bio || []).forEach((paragraph) => bio.appendChild(createElement('p', '', paragraph)));
 
-  const observer = new IntersectionObserver(
-    (entries) => {
-      entries.forEach(entry => {
+    const fields = document.getElementById('profile-fields');
+    Object.entries(config.profile?.fields || {}).forEach(([label, value], index) => {
+      const item = createElement('div', 'dossier-item');
+      const indexLabel = createElement('span', 'dossier-index', String(index + 1).padStart(2, '0'));
+      const term = createElement('dt', '', label);
+      const description = createElement('dd', '', displayValue(value));
+      item.append(indexLabel, term, description);
+      fields.appendChild(item);
+    });
+  }
+
+  function renderLoadout() {
+    const grid = document.getElementById('loadout-grid');
+    (config.loadout || []).forEach((category) => {
+      const card = createElement('article', 'loadout-card');
+      const header = createElement('header');
+      header.append(createElement('span', '', category.name), createElement('small', '', category.code));
+      const list = createElement('div', 'loadout-list');
+
+      (category.items || []).forEach((skill) => {
+        const level = Math.max(0, Math.min(100, Number(skill.level) || 0));
+        const row = createElement('div', 'loadout-item');
+        const label = createElement('div', 'loadout-label');
+        label.append(createElement('span', '', skill.name), createElement('strong', '', `${level}%`));
+        const meter = createElement('div', 'loadout-meter');
+        const fill = createElement('i');
+        fill.style.setProperty('--level', `${level}%`);
+        meter.appendChild(fill);
+        row.append(label, meter);
+        list.appendChild(row);
+      });
+
+      card.append(header, list);
+      grid.appendChild(card);
+    });
+  }
+
+  function renderOperations() {
+    const list = document.getElementById('operations-list');
+    (config.operations || []).forEach((operation, index) => {
+      const card = createElement('article', 'operation-card');
+      const lead = createElement('div', 'operation-lead');
+      lead.append(createElement('span', 'operation-number', String(index + 1).padStart(2, '0')));
+      const titleGroup = createElement('div');
+      titleGroup.append(createElement('small', '', `${operation.code} // ${operation.type}`), createElement('h3', '', operation.name));
+      lead.appendChild(titleGroup);
+
+      const body = createElement('div', 'operation-body');
+      body.appendChild(createElement('p', '', operation.description));
+      const tags = createElement('div', 'operation-tags');
+      (operation.stack || []).forEach((tech) => tags.appendChild(createElement('span', '', tech)));
+      body.appendChild(tags);
+
+      const actions = createElement('div', 'operation-actions');
+      const status = createElement('span', `operation-status ${String(operation.status).toLowerCase()}`, operation.status);
+      actions.appendChild(status);
+      [
+        ['SOURCE ↗', operation.source],
+        ['LIVE VIEW ↗', operation.demo]
+      ].forEach(([label, url]) => {
+        if (!url) return;
+        const link = createElement('a', '', label);
+        setExternalLink(link, url);
+        actions.appendChild(link);
+      });
+
+      card.append(lead, body, actions);
+      list.appendChild(card);
+    });
+  }
+
+  function renderContact() {
+    const links = document.getElementById('contact-links');
+    (config.contact?.links || []).forEach((contact) => {
+      const link = createElement('a');
+      setExternalLink(link, contact.url);
+      link.append(createElement('span', '', contact.label), createElement('strong', '', contact.value), createElement('i', '', '↗'));
+      links.appendChild(link);
+    });
+  }
+
+  function initClock() {
+    const clock = document.getElementById('system-clock');
+    const update = () => {
+      clock.textContent = new Intl.DateTimeFormat('zh-CN', {
+        hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false
+      }).format(new Date());
+    };
+    update();
+    window.setInterval(update, 1000);
+  }
+
+  function initNavigation() {
+    const menu = document.getElementById('menu-toggle');
+    const nav = document.getElementById('site-nav');
+    menu.addEventListener('click', () => {
+      const isOpen = menu.getAttribute('aria-expanded') === 'true';
+      menu.setAttribute('aria-expanded', String(!isOpen));
+      nav.classList.toggle('open', !isOpen);
+    });
+    nav.addEventListener('click', (event) => {
+      if (!event.target.closest('a')) return;
+      nav.classList.remove('open');
+      menu.setAttribute('aria-expanded', 'false');
+    });
+
+    const sections = [...document.querySelectorAll('main section[id]')];
+    const navLinks = [...nav.querySelectorAll('a')];
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (!entry.isIntersecting) return;
+        navLinks.forEach((link) => link.classList.toggle('active', link.dataset.target === entry.target.id));
+      });
+    }, { rootMargin: '-35% 0px -55% 0px' });
+    sections.forEach((section) => observer.observe(section));
+  }
+
+  function initReveal() {
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      document.querySelectorAll('.reveal').forEach((item) => item.classList.add('visible'));
+      return;
+    }
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
         if (entry.isIntersecting) {
           entry.target.classList.add('visible');
+          observer.unobserve(entry.target);
         }
       });
-    },
-    { threshold: 0.1 }
-  );
-
-  sections.forEach(section => observer.observe(section));
-})();
-
-// === Active Nav Link ===
-(function initActiveNav() {
-  const navLinks = document.querySelectorAll('.nav-link');
-  const sectionIds = Array.from(navLinks).map(link =>
-    link.getAttribute('href').substring(1)
-  );
-
-  function updateActive() {
-    let current = '';
-    for (const id of sectionIds) {
-      const section = document.getElementById(id);
-      if (section) {
-        const rect = section.getBoundingClientRect();
-        if (rect.top <= 150) {
-          current = id;
-        }
-      }
-    }
-
-    navLinks.forEach(link => {
-      link.classList.toggle(
-        'active',
-        link.getAttribute('href') === `#${current}`
-      );
-    });
+    }, { threshold: 0.08 });
+    document.querySelectorAll('.reveal').forEach((item) => observer.observe(item));
   }
 
-  window.addEventListener('scroll', updateActive, { passive: true });
-  updateActive();
+  applyMetadata();
+  renderNavigation();
+  renderIdentity();
+  renderStats();
+  renderProfile();
+  renderLoadout();
+  renderOperations();
+  renderContact();
+  initClock();
+  initNavigation();
+  initReveal();
 })();
-
-// === Glitch Effect on Hover ===
-(function initGlitch() {
-  document.querySelectorAll('.project-name').forEach(el => {
-    el.addEventListener('mouseenter', () => {
-      const original = el.textContent;
-      const glitchChars = '!@#$%^&*()_+-=[]{}|;:,.<>?';
-      let iterations = 0;
-
-      const interval = setInterval(() => {
-        el.textContent = original
-          .split('')
-          .map((char, i) => {
-            if (i < iterations) return original[i];
-            return glitchChars[Math.floor(Math.random() * glitchChars.length)];
-          })
-          .join('');
-
-        iterations += 1 / 2;
-        if (iterations >= original.length) {
-          el.textContent = original;
-          clearInterval(interval);
-        }
-      }, 30);
-    });
-  });
-})();
-
-// === Command Output in Nav ===
-(function initNavCommand() {
-  const output = document.getElementById('terminal-output');
-  const navLinks = document.querySelectorAll('.nav-link');
-
-  navLinks.forEach(link => {
-    link.addEventListener('click', () => {
-      const cmd = link.getAttribute('data-cmd');
-      const line = document.createElement('div');
-      line.className = 'output-line';
-      line.innerHTML = `<span style="color:var(--green)">$</span> ${cmd}`;
-      output.appendChild(line);
-
-      output.style.opacity = '1';
-      setTimeout(() => {
-        output.style.opacity = '0';
-        setTimeout(() => { output.innerHTML = ''; }, 300);
-      }, 1200);
-    });
-  });
-})();
-
-// === Smooth scroll offset for fixed nav ===
-document.querySelectorAll('.nav-link').forEach(link => {
-  link.addEventListener('click', (e) => {
-    e.preventDefault();
-    const target = document.querySelector(link.getAttribute('href'));
-    if (target) {
-      const offset = 60;
-      const y = target.getBoundingClientRect().top + window.pageYOffset - offset;
-      window.scrollTo({ top: y, behavior: 'smooth' });
-    }
-  });
-});
