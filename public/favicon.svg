@@ -1,5 +1,5 @@
 <svg width="64" height="64" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
   <path d="M4 4h56v42L46 60H4z" fill="#ff5b22"/>
   <path d="M46 46h14L46 60z" fill="#c8ff31"/>
-  <text x="32" y="38" fill="#070807" font-family="Arial Narrow,Arial,sans-serif" font-size="21" font-weight="900" text-anchor="middle">AV5</text>
+  <text x="32" y="38" fill="#070807" font-family="Arial Narrow,Arial,sans-serif" font-size="24" font-weight="900" text-anchor="middle">A5</text>
 </svg>

@@ -133,7 +133,21 @@ export async function readSiteContent(): Promise<SiteContent> {
 }
 
 function upgradeLegacyBrand(content: SiteContent): SiteContent {
-  if (content.brand?.name.trim().toUpperCase() !== 'PHANTOM X') return content;
+  const brandName = content.brand?.name.trim().toUpperCase();
+  const isPhantomBrand = brandName === 'PHANTOM X';
+  const usesOldAnt1volveMark = brandName === 'ANT1VOLVE 5'
+    && (content.brand.mark.toUpperCase() === 'AV5' || /^AV5-/i.test(content.player.id));
+
+  if (!isPhantomBrand && !usesOldAnt1volveMark) return content;
+
+  if (usesOldAnt1volveMark) {
+    return {
+      ...content,
+      brand: { ...content.brand, mark: 'A5' },
+      player: { ...content.player, id: content.player.id.replace(/^AV5-/i, 'A5-') },
+    };
+  }
+
   return {
     ...content,
     meta: {
@@ -142,7 +156,7 @@ function upgradeLegacyBrand(content: SiteContent): SiteContent {
     },
     brand: {
       name: 'ANT1VOLVE 5',
-      mark: 'AV5',
+      mark: 'A5',
       division: 'ANTI-INVOLUTION // TRUE EVOLUTION',
     },
     gallery: {
@@ -155,7 +169,7 @@ function upgradeLegacyBrand(content: SiteContent): SiteContent {
     },
     player: {
       ...content.player,
-      id: content.player.id.replace(/^PX-/i, 'AV5-'),
+      id: content.player.id.replace(/^PX-/i, 'A5-'),
       tagline: '拒绝无意义的竞争，选择真正的进化。',
       focus: 'ANTI-INVOLUTION // CONTINUOUS EVOLUTION',
       status: 'EVOLVING // ONLINE',

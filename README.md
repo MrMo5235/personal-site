@@ -1,6 +1,6 @@
 # ANT1VOLVE 5 // True Evolution Profile
 
-CS / 电竞战队风格的个人主页。`ANT1VOLVE 5` 同时包含 Anti-Involution、Evolve 与 AN / Andy 三层含义，核心态度是：拒绝无意义的竞争，选择真正的进化。当前版本使用 OpenAI Sites 托管运行，并提供访客模式和管理员前台编辑能力。
+CS / 电竞战队风格的个人主页。`ANT1VOLVE 5`（简称 `A5`）同时包含 Anti-Involution、Evolve 与 AN / Andy 三层含义；其中 `V` 也借用罗马数字 5 的视觉含义。核心态度是：拒绝无意义的竞争，选择真正的进化。当前版本使用 OpenAI Sites 托管运行，并提供访客模式和管理员前台编辑能力。
 
 ## 功能
 

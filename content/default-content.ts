@@ -7,7 +7,7 @@ export const defaultContent: SiteContent = {
   },
   brand: {
     name: 'ANT1VOLVE 5',
-    mark: 'AV5',
+    mark: 'A5',
     division: 'ANTI-INVOLUTION // TRUE EVOLUTION',
   },
   navigation: [
@@ -26,7 +26,7 @@ export const defaultContent: SiteContent = {
     ],
   },
   player: {
-    id: 'AV5-01',
+    id: 'A5-01',
     name: 'Your Name',
     callsign: 'PLAYER',
     role: 'Full-Stack Developer',
