@@ -27,3 +27,22 @@ export const mediaAssets = sqliteTable(
     check('media_assets_category_check', sql`${table.category} IN ('image', 'document')`),
   ],
 );
+
+export const notes = sqliteTable(
+  'notes',
+  {
+    id: text('id').primaryKey(),
+    slug: text('slug').notNull().unique(),
+    title: text('title').notNull(),
+    summary: text('summary').notNull().default(''),
+    content: text('content').notNull().default(''),
+    tags: text('tags').notNull().default('[]'),
+    published: integer('published', { mode: 'boolean' }).notNull().default(true),
+    createdAt: text('created_at').notNull(),
+    updatedAt: text('updated_at').notNull(),
+    updatedBy: text('updated_by').notNull(),
+  },
+  (table) => [
+    index('idx_notes_published_updated').on(table.published, table.updatedAt),
+  ],
+);

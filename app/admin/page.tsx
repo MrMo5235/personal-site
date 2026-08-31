@@ -1,7 +1,7 @@
-import { AdminDashboard } from '@/components/admin-dashboard';
-import { listMedia, readSiteContent } from '@/db/runtime';
 import { isAdminEmail } from '@/lib/admin-auth';
 import { chatGPTSignOutPath, requireChatGPTUser } from '../chatgpt-auth';
+import { redirect } from 'next/navigation';
+import Link from 'next/link';
 
 export const dynamic = 'force-dynamic';
 
@@ -14,18 +14,10 @@ export default async function AdminPage() {
         <h1>NOT AUTHORIZED</h1>
         <p>当前账号 <strong>{user.email}</strong> 已登录，但不在管理员名单中。</p>
         <p>请让站点所有者把该邮箱加入 ADMIN_EMAILS，然后重新登录。</p>
-        <div><a href="/">RETURN TO SITE</a><a href={chatGPTSignOutPath('/')} target="_top">SIGN OUT</a></div>
+        <div><Link href="/">RETURN TO SITE</Link><a href={chatGPTSignOutPath('/')} target="_top">SIGN OUT</a></div>
       </main>
     );
   }
 
-  const [content, media] = await Promise.all([readSiteContent(), listMedia()]);
-  return (
-    <AdminDashboard
-      initialContent={content}
-      initialMedia={media}
-      email={user.email}
-      signOutHref={chatGPTSignOutPath('/')}
-    />
-  );
+  redirect('/?edit=1');
 }

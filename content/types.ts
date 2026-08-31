@@ -57,3 +57,18 @@ export type MediaAsset = {
   createdAt: string;
   url: string;
 };
+
+export type Note = {
+  id: string;
+  slug: string;
+  title: string;
+  summary: string;
+  content: string;
+  tags: string[];
+  published: boolean;
+  createdAt: string;
+  updatedAt: string;
+  updatedBy: string;
+};
+
+export type NoteSummary = Omit<Note, 'content' | 'updatedBy'>;

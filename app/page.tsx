@@ -1,14 +1,15 @@
 import { chatGPTSignInPath, chatGPTSignOutPath, getChatGPTUser } from './chatgpt-auth';
 import { SiteClient } from '@/components/site-client';
-import { listMedia, readSiteContent } from '@/db/runtime';
+import { listMedia, listNotes, readSiteContent } from '@/db/runtime';
 import { isAdminEmail } from '@/lib/admin-auth';
 
 export const dynamic = 'force-dynamic';
 
 export default async function HomePage() {
-  const [content, media, user] = await Promise.all([
+  const [content, media, notes, user] = await Promise.all([
     readSiteContent(),
     listMedia(),
+    listNotes(),
     getChatGPTUser(),
   ]);
 
@@ -16,6 +17,7 @@ export default async function HomePage() {
     <SiteClient
       content={content}
       media={media}
+      notes={notes}
       auth={{
         signedIn: Boolean(user),
         isAdmin: Boolean(user && isAdminEmail(user.email)),

@@ -25,7 +25,8 @@ export async function POST(request: Request) {
 
   const form = await request.formData();
   const file = form.get('file');
-  const alt = String(form.get('alt') || '').slice(0, 240);
+  const rawAlt = form.get('alt');
+  const alt = (typeof rawAlt === 'string' ? rawAlt : '').slice(0, 240);
   if (!(file instanceof File)) {
     return Response.json({ error: 'Please select a file.' }, { status: 400 });
   }
@@ -101,7 +102,9 @@ export async function POST(request: Request) {
 function sanitizeFilename(name: string) {
   const cleaned = name
     .normalize('NFKC')
-    .replace(/[\\/:*?"<>|\u0000-\u001f]/g, '-')
+    .split('')
+    .map((character) => character.charCodeAt(0) < 32 || /[\\/:*?"<>|]/.test(character) ? '-' : character)
+    .join('')
     .replace(/\s+/g, '-')
     .replace(/-+/g, '-')
     .slice(0, 120);
